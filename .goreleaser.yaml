@@ -96,6 +96,9 @@ brews:
 release:
   draft: false
   prerelease: auto
+  # Delete and re-upload assets that already exist on the release, so a re-run
+  # after a partial failure doesn't error with "422 already_exists".
+  replace_existing_artifacts: true
   footer: |
     ---
     Released by [GoReleaser](https://goreleaser.com).

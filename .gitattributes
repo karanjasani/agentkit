@@ -1,0 +1,8 @@
+# Force LF line endings in the working tree on every platform. Without this,
+# Git's autocrlf on Windows rewrites checked-out files to CRLF, which breaks
+# byte-for-byte golden-file comparisons and other line-ending-sensitive tests.
+* text=auto eol=lf
+
+# Explicitly treat test fixtures and golden data as LF text.
+*.go   text eol=lf
+*.json text eol=lf
