@@ -1,7 +1,9 @@
 # AgentKit — RepoMap
 
 [![CI](https://github.com/karanjasani/agentkit/actions/workflows/ci.yml/badge.svg)](https://github.com/karanjasani/agentkit/actions/workflows/ci.yml)
+<!-- Hidden until the repo is public and Scorecard has published a score worth showing.
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/karanjasani/agentkit/badge)](https://securityscorecards.dev/viewer/?uri=github.com/karanjasani/agentkit)
+-->
 [![Go Reference](https://pkg.go.dev/badge/github.com/karanjasani/agentkit.svg)](https://pkg.go.dev/github.com/karanjasani/agentkit)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
