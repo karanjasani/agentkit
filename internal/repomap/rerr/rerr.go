@@ -9,6 +9,8 @@ import "fmt"
 // Code is a stable, machine-readable error identifier surfaced in JSON output.
 type Code string
 
+// The following codes enumerate every stable error identifier in the
+// repomap.v1 contract; they are re-exported by pkg/api.
 const (
 	SymbolNotFound   Code = "SYMBOL_NOT_FOUND"
 	PackageNotFound  Code = "PACKAGE_NOT_FOUND"

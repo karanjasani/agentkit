@@ -103,8 +103,8 @@ func typePkgPath(t types.Type) string {
 	return ""
 }
 
-// handlerInfo resolves a handler expression to a display name.
-func handlerName(e ast.Expr, info *types.Info) string {
+// handlerName resolves a handler expression to a display name.
+func handlerName(e ast.Expr) string {
 	switch h := e.(type) {
 	case *ast.Ident:
 		return h.Name
@@ -117,7 +117,7 @@ func handlerName(e ast.Expr, info *types.Info) string {
 		return "func(...)"
 	case *ast.CallExpr:
 		// e.g. middleware(handler) — best-effort.
-		return handlerName(h.Fun, info)
+		return handlerName(h.Fun)
 	}
 	return ""
 }

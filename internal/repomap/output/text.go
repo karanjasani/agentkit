@@ -8,6 +8,28 @@ import (
 	"github.com/karanjasani/agentkit/pkg/models"
 )
 
+// ew accumulates the first write error so the text renderers can emit many
+// lines and check for failure once. After an error every further write is a
+// no-op, which keeps the renderers readable and satisfies errcheck.
+type ew struct {
+	w   io.Writer
+	err error
+}
+
+func (e *ew) printf(format string, a ...any) {
+	if e.err != nil {
+		return
+	}
+	_, e.err = fmt.Fprintf(e.w, format, a...)
+}
+
+func (e *ew) println(a ...any) {
+	if e.err != nil {
+		return
+	}
+	_, e.err = fmt.Fprintln(e.w, a...)
+}
+
 // renderText writes a compact human-readable representation of a result. It is
 // intentionally best-effort: JSON is the canonical, complete format.
 func renderText(w io.Writer, result any) error {
@@ -46,173 +68,185 @@ func loc(l models.Location) string {
 }
 
 func renderOverview(w io.Writer, o models.Overview) error {
-	fmt.Fprintf(w, "module: %s\n", o.Module)
+	e := &ew{w: w}
+	e.printf("module: %s\n", o.Module)
 	if o.GoVersion != "" {
-		fmt.Fprintf(w, "go: %s\n", o.GoVersion)
+		e.printf("go: %s\n", o.GoVersion)
 	}
-	fmt.Fprintf(w, "packages: %d  files: %d  entrypoints: %d\n",
+	e.printf("packages: %d  files: %d  entrypoints: %d\n",
 		o.Stats.Packages, o.Stats.Files, o.Stats.Entrypoints)
 	if len(o.Entrypoints) > 0 {
-		fmt.Fprintln(w, "\nentrypoints:")
+		e.println("\nentrypoints:")
 		for _, p := range o.Entrypoints {
-			fmt.Fprintf(w, "  %s (%s)\n", p.ImportPath, p.Dir)
+			e.printf("  %s (%s)\n", p.ImportPath, p.Dir)
 		}
 	}
-	fmt.Fprintln(w, "\npackages:")
+	e.println("\npackages:")
 	for _, p := range o.Packages {
-		fmt.Fprintf(w, "  %s\n", p.ImportPath)
+		e.printf("  %s\n", p.ImportPath)
 	}
-	return nil
+	return e.err
 }
 
 func renderPackage(w io.Writer, p models.Package) error {
-	fmt.Fprintf(w, "package %s (%s)\n", p.Name, p.ImportPath)
-	fmt.Fprintf(w, "dir: %s\n", p.Dir)
-	fmt.Fprintf(w, "\nimports (%d):\n", len(p.Imports))
+	e := &ew{w: w}
+	e.printf("package %s (%s)\n", p.Name, p.ImportPath)
+	e.printf("dir: %s\n", p.Dir)
+	e.printf("\nimports (%d):\n", len(p.Imports))
 	for _, i := range p.Imports {
-		fmt.Fprintf(w, "  %s\n", i)
+		e.printf("  %s\n", i)
 	}
-	fmt.Fprintf(w, "\nimported by (%d):\n", len(p.ImportedBy))
+	e.printf("\nimported by (%d):\n", len(p.ImportedBy))
 	for _, i := range p.ImportedBy {
-		fmt.Fprintf(w, "  %s\n", i)
+		e.printf("  %s\n", i)
 	}
-	fmt.Fprintf(w, "\nexports (%d):\n", len(p.Exports))
+	e.printf("\nexports (%d):\n", len(p.Exports))
 	for _, s := range p.Exports {
-		fmt.Fprintf(w, "  %s %s  %s\n", s.Kind, s.Name, loc(s.Location))
+		e.printf("  %s %s  %s\n", s.Kind, s.Name, loc(s.Location))
 	}
 	if len(p.TestFiles) > 0 {
-		fmt.Fprintf(w, "\ntest files (%d):\n", len(p.TestFiles))
+		e.printf("\ntest files (%d):\n", len(p.TestFiles))
 		for _, f := range p.TestFiles {
-			fmt.Fprintf(w, "  %s\n", f)
+			e.printf("  %s\n", f)
 		}
 	}
-	return nil
+	return e.err
 }
 
 func renderSymbol(w io.Writer, s models.Symbol) error {
-	fmt.Fprintf(w, "%s %s\n", s.Kind, s.Name)
-	fmt.Fprintf(w, "package: %s\n", s.Package)
-	fmt.Fprintf(w, "location: %s\n", loc(s.Location))
+	e := &ew{w: w}
+	e.printf("%s %s\n", s.Kind, s.Name)
+	e.printf("package: %s\n", s.Package)
+	e.printf("location: %s\n", loc(s.Location))
 	if s.Signature != "" {
-		fmt.Fprintf(w, "signature: %s\n", s.Signature)
+		e.printf("signature: %s\n", s.Signature)
 	}
 	if s.Doc != "" {
-		fmt.Fprintf(w, "\ndoc:\n%s\n", s.Doc)
+		e.printf("\ndoc:\n%s\n", s.Doc)
 	}
 	if s.Body != "" {
-		fmt.Fprintf(w, "\nbody:\n%s\n", s.Body)
+		e.printf("\nbody:\n%s\n", s.Body)
 	}
 	if s.Shape != nil {
-		fmt.Fprintln(w, "\nshape:")
-		_ = renderStruct(w, *s.Shape, 1)
-	}
-	if len(s.Callers) > 0 {
-		fmt.Fprintf(w, "\ncallers (%d):\n", len(s.Callers))
-		for _, c := range s.Callers {
-			fmt.Fprintf(w, "  %s  %s  [%s]\n", loc(c.Location), strings.TrimSpace(c.Context), c.Confidence)
+		e.println("\nshape:")
+		if e.err == nil {
+			e.err = renderStruct(w, *s.Shape, 1)
 		}
 	}
-	return nil
+	if len(s.Callers) > 0 {
+		e.printf("\ncallers (%d):\n", len(s.Callers))
+		for _, c := range s.Callers {
+			e.printf("  %s  %s  [%s]\n", loc(c.Location), strings.TrimSpace(c.Context), c.Confidence)
+		}
+	}
+	return e.err
 }
 
 func renderCallers(w io.Writer, c models.Callers) error {
-	fmt.Fprintf(w, "callers of %s (%s)\n", c.Symbol, c.Package)
-	fmt.Fprintf(w, "\ndirect (%d):\n", len(c.Direct))
+	e := &ew{w: w}
+	e.printf("callers of %s (%s)\n", c.Symbol, c.Package)
+	e.printf("\ndirect (%d):\n", len(c.Direct))
 	for _, d := range c.Direct {
-		fmt.Fprintf(w, "  %s  %s  %s  [%s]\n", d.Symbol, loc(d.Location), strings.TrimSpace(d.Context), d.Confidence)
+		e.printf("  %s  %s  %s  [%s]\n", d.Symbol, loc(d.Location), strings.TrimSpace(d.Context), d.Confidence)
 	}
-	fmt.Fprintf(w, "\nindirect (%d):\n", len(c.Indirect))
+	e.printf("\nindirect (%d):\n", len(c.Indirect))
 	for _, d := range c.Indirect {
-		fmt.Fprintf(w, "  %s  %s  [%s]\n", d.Symbol, loc(d.Location), d.Confidence)
+		e.printf("  %s  %s  [%s]\n", d.Symbol, loc(d.Location), d.Confidence)
 	}
-	return nil
+	return e.err
 }
 
 func renderDeps(w io.Writer, d models.Deps) error {
-	fmt.Fprintf(w, "deps of %s (depth %d)\n", d.Root, d.Depth)
-	fmt.Fprintf(w, "\nnodes (%d):\n", len(d.Nodes))
+	e := &ew{w: w}
+	e.printf("deps of %s (depth %d)\n", d.Root, d.Depth)
+	e.printf("\nnodes (%d):\n", len(d.Nodes))
 	for _, n := range d.Nodes {
-		fmt.Fprintf(w, "  %s\n", n)
+		e.printf("  %s\n", n)
 	}
-	fmt.Fprintf(w, "\nedges (%d):\n", len(d.Edges))
-	for _, e := range d.Edges {
-		fmt.Fprintf(w, "  %s -> %s\n", e.From, e.To)
+	e.printf("\nedges (%d):\n", len(d.Edges))
+	for _, edge := range d.Edges {
+		e.printf("  %s -> %s\n", edge.From, edge.To)
 	}
-	return nil
+	return e.err
 }
 
 func renderImpact(w io.Writer, i models.Impact) error {
-	fmt.Fprintf(w, "impact vs %s\n", i.Base)
-	fmt.Fprintf(w, "risk: %d (%s)\n", i.RiskScore, i.RiskLevel)
-	fmt.Fprintf(w, "\nchanged packages (%d):\n", len(i.ChangedPackages))
+	e := &ew{w: w}
+	e.printf("impact vs %s\n", i.Base)
+	e.printf("risk: %d (%s)\n", i.RiskScore, i.RiskLevel)
+	e.printf("\nchanged packages (%d):\n", len(i.ChangedPackages))
 	for _, p := range i.ChangedPackages {
-		fmt.Fprintf(w, "  %s\n", p)
+		e.printf("  %s\n", p)
 	}
-	fmt.Fprintf(w, "\naffected packages (%d):\n", len(i.AffectedPackages))
+	e.printf("\naffected packages (%d):\n", len(i.AffectedPackages))
 	for _, p := range i.AffectedPackages {
-		fmt.Fprintf(w, "  %s\n", p)
+		e.printf("  %s\n", p)
 	}
-	fmt.Fprintf(w, "\nrecommended tests (%d):\n", len(i.RecommendedTests))
+	e.printf("\nrecommended tests (%d):\n", len(i.RecommendedTests))
 	for _, t := range i.RecommendedTests {
-		fmt.Fprintf(w, "  %s\n", t)
+		e.printf("  %s\n", t)
 	}
-	return nil
+	return e.err
 }
 
 func renderTests(w io.Writer, t models.Tests) error {
-	fmt.Fprintf(w, "tests for %s\n", t.Symbol)
-	writeTestGroup(w, "unit", t.Unit)
-	writeTestGroup(w, "integration", t.Integration)
-	writeTestGroup(w, "benchmark", t.Benchmark)
-	return nil
+	e := &ew{w: w}
+	e.printf("tests for %s\n", t.Symbol)
+	writeTestGroup(e, "unit", t.Unit)
+	writeTestGroup(e, "integration", t.Integration)
+	writeTestGroup(e, "benchmark", t.Benchmark)
+	return e.err
 }
 
-func writeTestGroup(w io.Writer, label string, tests []models.Test) {
-	fmt.Fprintf(w, "\n%s (%d):\n", label, len(tests))
+func writeTestGroup(e *ew, label string, tests []models.Test) {
+	e.printf("\n%s (%d):\n", label, len(tests))
 	for _, t := range tests {
-		fmt.Fprintf(w, "  %s  %s\n", t.Name, loc(t.Location))
+		e.printf("  %s  %s\n", t.Name, loc(t.Location))
 	}
 }
 
 func renderEndpoint(w io.Writer, e models.Endpoint) error {
-	fmt.Fprintf(w, "%s %s  [%s, %s]\n", e.Method, e.Path, e.Framework, e.Confidence)
-	fmt.Fprintf(w, "route: %s\n", loc(e.Route))
+	out := &ew{w: w}
+	out.printf("%s %s  [%s, %s]\n", e.Method, e.Path, e.Framework, e.Confidence)
+	out.printf("route: %s\n", loc(e.Route))
 	if e.Handler != nil {
-		fmt.Fprintf(w, "handler: %s  %s\n", e.Handler.Name, loc(e.Handler.Location))
+		out.printf("handler: %s  %s\n", e.Handler.Name, loc(e.Handler.Location))
 	}
 	if e.RequestType != "" {
-		fmt.Fprintf(w, "request: %s\n", e.RequestType)
+		out.printf("request: %s\n", e.RequestType)
 	}
 	if e.ResponseType != "" {
-		fmt.Fprintf(w, "response: %s\n", e.ResponseType)
+		out.printf("response: %s\n", e.ResponseType)
 	}
 	if len(e.Orchestration) > 0 {
-		fmt.Fprintf(w, "\norchestration (%d):\n", len(e.Orchestration))
+		out.printf("\norchestration (%d):\n", len(e.Orchestration))
 		for _, s := range e.Orchestration {
-			fmt.Fprintf(w, "  %s  %s\n", s.Name, loc(s.Location))
+			out.printf("  %s  %s\n", s.Name, loc(s.Location))
 		}
 	}
 	if len(e.Upstreams) > 0 {
-		fmt.Fprintf(w, "\nupstreams (%d):\n", len(e.Upstreams))
+		out.printf("\nupstreams (%d):\n", len(e.Upstreams))
 		for _, u := range e.Upstreams {
-			fmt.Fprintf(w, "  %s %s  %s  [%s]\n", u.Method, u.URL, loc(u.Location), u.Confidence)
+			out.printf("  %s %s  %s  [%s]\n", u.Method, u.URL, loc(u.Location), u.Confidence)
 		}
 	}
-	return nil
+	return out.err
 }
 
 func renderUpstreams(w io.Writer, u models.Upstreams) error {
-	fmt.Fprintf(w, "upstreams in %s (%d)\n", u.Root, len(u.Calls))
+	e := &ew{w: w}
+	e.printf("upstreams in %s (%d)\n", u.Root, len(u.Calls))
 	for _, c := range u.Calls {
-		fmt.Fprintf(w, "  %s %s  decode=%s  %s  [%s]\n",
+		e.printf("  %s %s  decode=%s  %s  [%s]\n",
 			c.Method, c.URL, c.DecodeType, loc(c.Location), c.Confidence)
 	}
-	return nil
+	return e.err
 }
 
 func renderStruct(w io.Writer, s models.Struct, indent int) error {
+	e := &ew{w: w}
 	pad := strings.Repeat("  ", indent)
-	fmt.Fprintf(w, "%s%s {\n", pad, s.Name)
+	e.printf("%s%s {\n", pad, s.Name)
 	for _, f := range s.Fields {
 		jsonName := f.JSONName
 		if jsonName == "" {
@@ -222,11 +256,11 @@ func renderStruct(w io.Writer, s models.Struct, indent int) error {
 		if f.Optional {
 			opt = "?"
 		}
-		fmt.Fprintf(w, "%s  %s%s: %s\n", pad, jsonName, opt, f.Type)
-		if f.Nested != nil {
-			_ = renderStruct(w, *f.Nested, indent+2)
+		e.printf("%s  %s%s: %s\n", pad, jsonName, opt, f.Type)
+		if f.Nested != nil && e.err == nil {
+			e.err = renderStruct(w, *f.Nested, indent+2)
 		}
 	}
-	fmt.Fprintf(w, "%s}\n", pad)
-	return nil
+	e.printf("%s}\n", pad)
+	return e.err
 }

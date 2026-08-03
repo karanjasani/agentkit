@@ -46,11 +46,11 @@ func TestMatchesPath(t *testing.T) {
 		clean, raw string
 		want       bool
 	}{
-		{"", ".", true},                                     // wildcard
-		{"example.com/m/svc", "example.com/m/svc", true},    // exact path
-		{"example.com/m", "example.com/m", true},            // path prefix
-		{"svc", "svc", true},                                // directory match
-		{"other", "other", false},                           // no match
+		{"", ".", true}, // wildcard
+		{"example.com/m/svc", "example.com/m/svc", true}, // exact path
+		{"example.com/m", "example.com/m", true},         // path prefix
+		{"svc", "svc", true},                             // directory match
+		{"other", "other", false},                        // no match
 	}
 	for _, tc := range cases {
 		if got := matchesPath(res, p, tc.clean, tc.raw); got != tc.want {
@@ -75,16 +75,16 @@ func TestHandlerName(t *testing.T) {
 		"middleware(handler)": "middleware",
 	}
 	for src, want := range cases {
-		if got := handlerName(parseExpr(t, src), nil); got != want {
+		if got := handlerName(parseExpr(t, src)); got != want {
 			t.Errorf("handlerName(%q) = %q, want %q", src, got, want)
 		}
 	}
 	// Function literal.
-	if got := handlerName(parseExpr(t, "func(){}"), nil); got != "func(...)" {
+	if got := handlerName(parseExpr(t, "func(){}")); got != "func(...)" {
 		t.Errorf("handlerName(funclit) = %q", got)
 	}
 	// Nested selector: X is itself a selector, so only the final name is used.
-	if got := handlerName(parseExpr(t, "a.b.Handler"), nil); got != "Handler" {
+	if got := handlerName(parseExpr(t, "a.b.Handler")); got != "Handler" {
 		t.Errorf("handlerName(nested selector) = %q, want Handler", got)
 	}
 }

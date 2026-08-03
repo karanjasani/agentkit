@@ -75,7 +75,7 @@ func Trace(ctx context.Context, l *loader.Loader, method, path string) (models.E
 	}
 
 	// Resolve handler declaration.
-	hName := handlerName(best.route.Handler, best.pkg.TypesInfo)
+	hName := handlerName(best.route.Handler)
 	if fn, fpkg := findHandlerDecl(res, best.pkg, best.route.Handler, hName); fn != nil {
 		out.Handler = &models.Symbol{
 			Name:     fn.Name.Name,

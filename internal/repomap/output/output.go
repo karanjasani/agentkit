@@ -65,7 +65,7 @@ func Success(w io.Writer, format Format, result any) error {
 func Failure(w io.Writer, format Format, err error) int {
 	e := rerr.As(err)
 	if format == FormatText {
-		fmt.Fprintf(w, "error [%s]: %s\n", e.Code, e.Message)
+		_, _ = fmt.Fprintf(w, "error [%s]: %s\n", e.Code, e.Message)
 		return exitFor(e)
 	}
 	env := models.Envelope{

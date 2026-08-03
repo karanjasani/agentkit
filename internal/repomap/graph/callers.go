@@ -112,7 +112,7 @@ func Callers(ctx context.Context, l *loader.Loader, name string) (models.Callers
 
 func callerFromEdge(res *loader.Result, lines *srcline.Cache, edge *callgraph.Edge) models.Caller {
 	caller := edge.Caller.Func
-	loc := models.Location{}
+	var loc models.Location
 	context := ""
 	confidence := "possible"
 

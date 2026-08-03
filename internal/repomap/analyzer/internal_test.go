@@ -104,7 +104,7 @@ func TestParseJSONTag(t *testing.T) {
 	if name != "id" || !omit || skip {
 		t.Errorf("got %q %v %v", name, omit, skip)
 	}
-	name, _, skip = parseJSONTag(reflect.StructTag(`json:"-"`), "ID")
+	_, _, skip = parseJSONTag(reflect.StructTag(`json:"-"`), "ID")
 	if !skip {
 		t.Errorf("expected skip for json:-")
 	}
