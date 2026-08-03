@@ -1,0 +1,35 @@
+{
+  "method": "GET",
+  "path": "/api/v1/widgets/{id}",
+  "framework": "net/http",
+  "handler": {
+    "name": "getWidget",
+    "kind": "func",
+    "package": "example.com/sample",
+    "location": {
+      "file": "main.go",
+      "line": 20,
+      "col": 6
+    }
+  },
+  "route": {
+    "file": "main.go",
+    "line": 15,
+    "col": 16
+  },
+  "orchestration": [
+    {
+      "name": "FetchWidget",
+      "kind": "func",
+      "package": "example.com/sample/service",
+      "location": {
+        "file": "service/service.go",
+        "line": 15,
+        "col": 6
+      }
+    }
+  ],
+  "request_type": "models.WidgetRequest",
+  "response_type": "models.Widget",
+  "confidence": "direct"
+}

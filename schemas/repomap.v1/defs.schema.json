@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/karanjasani/agentkit/schemas/repomap.v1/defs.schema.json",
+  "title": "repomap.v1 shared definitions",
+  "$defs": {
+    "location": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["file", "line"],
+      "properties": {
+        "file": {
+          "type": "string",
+          "description": "Path relative to the module root, forward-slash normalized."
+        },
+        "line": { "type": "integer", "minimum": 0 },
+        "col": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "pkgref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["import_path", "name", "dir"],
+      "properties": {
+        "import_path": { "type": "string" },
+        "name": { "type": "string" },
+        "dir": { "type": "string" }
+      }
+    },
+    "struct": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "fields"],
+      "properties": {
+        "name": { "type": "string" },
+        "fields": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/field" }
+        }
+      }
+    },
+    "field": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "type"],
+      "properties": {
+        "name": { "type": "string" },
+        "json_name": { "type": "string" },
+        "type": { "type": "string" },
+        "optional": { "type": "boolean" },
+        "nested": { "$ref": "#/$defs/struct" }
+      }
+    },
+    "symbol": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "kind", "package", "location"],
+      "properties": {
+        "name": { "type": "string" },
+        "kind": {
+          "type": "string",
+          "enum": ["func", "type", "var", "const", "method"]
+        },
+        "package": { "type": "string" },
+        "location": { "$ref": "#/$defs/location" },
+        "signature": { "type": "string" },
+        "doc": { "type": "string" },
+        "body": { "type": "string" },
+        "recv": { "type": "string" },
+        "shape": { "$ref": "#/$defs/struct" },
+        "callers": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/caller" }
+        },
+        "tests": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/test" }
+        }
+      }
+    },
+    "caller": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["symbol", "package", "location", "context", "confidence"],
+      "properties": {
+        "symbol": { "type": "string" },
+        "package": { "type": "string" },
+        "location": { "$ref": "#/$defs/location" },
+        "context": { "type": "string" },
+        "confidence": { "type": "string", "enum": ["direct", "possible"] }
+      }
+    },
+    "test": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "package", "location", "kind"],
+      "properties": {
+        "name": { "type": "string" },
+        "package": { "type": "string" },
+        "location": { "$ref": "#/$defs/location" },
+        "kind": {
+          "type": "string",
+          "enum": ["unit", "integration", "benchmark"]
+        }
+      }
+    },
+    "upstream": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["location", "confidence"],
+      "properties": {
+        "service": { "type": "string" },
+        "method": { "type": "string" },
+        "url": { "type": "string" },
+        "decode_type": { "type": "string" },
+        "location": { "$ref": "#/$defs/location" },
+        "confidence": { "type": "string" }
+      }
+    }
+  }
+}

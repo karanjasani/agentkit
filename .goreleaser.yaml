@@ -1,0 +1,111 @@
+# GoReleaser configuration for AgentKit / repomap.
+# Docs: https://goreleaser.com
+version: 2
+
+project_name: agentkit
+
+before:
+  hooks:
+    - go mod tidy
+    - go mod verify
+
+builds:
+  - id: repomap
+    main: ./cmd/repomap
+    binary: repomap
+    env:
+      - CGO_ENABLED=0
+    flags:
+      - -trimpath
+    ldflags:
+      - -s -w
+      - -X github.com/karanjasani/agentkit/internal/version.version={{.Version}}
+      - -X github.com/karanjasani/agentkit/internal/version.commit={{.Commit}}
+      - -X github.com/karanjasani/agentkit/internal/version.date={{.CommitDate}}
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    mod_timestamp: "{{ .CommitTimestamp }}"
+
+archives:
+  - id: default
+    formats: [tar.gz]
+    name_template: >-
+      {{ .Binary }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+    files:
+      - LICENSE
+      - README.md
+      - CHANGELOG.md
+
+checksum:
+  name_template: "checksums.txt"
+  algorithm: sha256
+
+sboms:
+  - id: archive
+    artifacts: archive
+
+signs:
+  - id: cosign-checksum
+    cmd: cosign
+    signature: "${artifact}.sig"
+    certificate: "${artifact}.pem"
+    args:
+      - sign-blob
+      - "--output-signature=${signature}"
+      - "--output-certificate=${certificate}"
+      - "${artifact}"
+      - "--yes"
+    artifacts: checksum
+    output: true
+
+nfpms:
+  - id: packages
+    package_name: repomap
+    vendor: Karan Jasani
+    homepage: https://github.com/karanjasani/agentkit
+    maintainer: Karan Jasani <karanjasani@users.noreply.github.com>
+    description: Deterministic repository intelligence for AI coding agents.
+    license: MIT
+    formats:
+      - deb
+      - rpm
+      - apk
+    bindir: /usr/bin
+
+brews:
+  - name: repomap
+    repository:
+      owner: karanjasani
+      name: homebrew-tap
+      token: "{{ .Env.HOMEBREW_TAP_TOKEN }}"
+    directory: Formula
+    homepage: https://github.com/karanjasani/agentkit
+    description: Deterministic repository intelligence for AI coding agents.
+    license: MIT
+    test: |
+      system "#{bin}/repomap", "--version"
+
+release:
+  draft: false
+  prerelease: auto
+  footer: |
+    ---
+    Released by [GoReleaser](https://goreleaser.com).
+
+changelog:
+  use: github
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^ci:"
+      - "Merge pull request"

@@ -1,0 +1,35 @@
+{
+  "module": "example.com/sample",
+  "go_version": "1.24",
+  "packages": [
+    {
+      "import_path": "example.com/sample",
+      "name": "main",
+      "dir": "."
+    },
+    {
+      "import_path": "example.com/sample/models",
+      "name": "models",
+      "dir": "models"
+    },
+    {
+      "import_path": "example.com/sample/service",
+      "name": "service",
+      "dir": "service"
+    }
+  ],
+  "entrypoints": [
+    {
+      "import_path": "example.com/sample",
+      "name": "main",
+      "dir": "."
+    }
+  ],
+  "generated": [],
+  "vendor": [],
+  "stats": {
+    "packages": 3,
+    "files": 3,
+    "entrypoints": 1
+  }
+}

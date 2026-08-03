@@ -1,0 +1,16 @@
+{
+  "root": ".",
+  "calls": [
+    {
+      "method": "GET",
+      "url": "https://api.example.com/widgets",
+      "decode_type": "models.Widget",
+      "location": {
+        "file": "service/service.go",
+        "line": 16,
+        "col": 23
+      },
+      "confidence": "direct"
+    }
+  ]
+}

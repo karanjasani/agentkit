@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/karanjasani/agentkit/schemas/repomap.v1/deps.schema.json",
+  "title": "repomap deps result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["root", "depth", "nodes", "edges"],
+  "properties": {
+    "root": { "type": "string" },
+    "depth": { "type": "integer", "minimum": 0 },
+    "nodes": { "type": "array", "items": { "type": "string" } },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["from", "to"],
+        "properties": {
+          "from": { "type": "string" },
+          "to": { "type": "string" }
+        }
+      }
+    }
+  }
+}

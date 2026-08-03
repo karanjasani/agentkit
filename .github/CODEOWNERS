@@ -1,0 +1,11 @@
+# Default owners for everything in the repo.
+# These owners are requested for review on every pull request.
+* @karanjasani
+
+# Release and CI configuration
+/.github/ @karanjasani
+/.goreleaser.yaml @karanjasani
+
+# Public API and JSON schemas: changes here affect compatibility.
+/pkg/ @karanjasani
+/schemas/ @karanjasani

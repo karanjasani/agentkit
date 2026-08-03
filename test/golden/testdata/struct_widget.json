@@ -1,0 +1,42 @@
+{
+  "name": "Widget",
+  "fields": [
+    {
+      "name": "ID",
+      "json_name": "id",
+      "type": "string"
+    },
+    {
+      "name": "Name",
+      "json_name": "name",
+      "type": "string"
+    },
+    {
+      "name": "Labels",
+      "json_name": "labels",
+      "type": "[]string",
+      "optional": true
+    },
+    {
+      "name": "Owner",
+      "json_name": "owner",
+      "type": "models.Owner",
+      "nested": {
+        "name": "Owner",
+        "fields": [
+          {
+            "name": "Email",
+            "json_name": "email",
+            "type": "string"
+          },
+          {
+            "name": "Team",
+            "json_name": "team",
+            "type": "string",
+            "optional": true
+          }
+        ]
+      }
+    }
+  ]
+}

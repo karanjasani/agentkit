@@ -1,0 +1,28 @@
+# Binaries
+/repomap
+/dist/
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Test artifacts
+*.test
+*.out
+coverage.txt
+coverage.html
+
+# Go workspace
+go.work
+go.work.sum
+
+# Editor / OS
+.DS_Store
+.idea/
+*.swp
+
+# GoReleaser
+dist/
+
+# Plan
+/plan.md

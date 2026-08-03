@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/karanjasani/agentkit/schemas/repomap.v1/upstreams.schema.json",
+  "title": "repomap upstreams result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["root", "calls"],
+  "properties": {
+    "root": { "type": "string" },
+    "calls": {
+      "type": "array",
+      "items": { "$ref": "defs.schema.json#/$defs/upstream" }
+    }
+  }
+}

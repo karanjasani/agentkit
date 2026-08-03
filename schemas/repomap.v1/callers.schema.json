@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/karanjasani/agentkit/schemas/repomap.v1/callers.schema.json",
+  "title": "repomap callers result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["symbol", "package", "location", "direct", "indirect"],
+  "properties": {
+    "symbol": { "type": "string" },
+    "package": { "type": "string" },
+    "location": { "$ref": "defs.schema.json#/$defs/location" },
+    "direct": {
+      "type": "array",
+      "items": { "$ref": "defs.schema.json#/$defs/caller" }
+    },
+    "indirect": {
+      "type": "array",
+      "items": { "$ref": "defs.schema.json#/$defs/caller" }
+    }
+  }
+}

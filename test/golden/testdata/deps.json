@@ -1,0 +1,23 @@
+{
+  "root": "example.com/sample",
+  "depth": 1,
+  "nodes": [
+    "example.com/sample",
+    "example.com/sample/models",
+    "example.com/sample/service"
+  ],
+  "edges": [
+    {
+      "from": "example.com/sample",
+      "to": "example.com/sample/models"
+    },
+    {
+      "from": "example.com/sample",
+      "to": "example.com/sample/service"
+    },
+    {
+      "from": "example.com/sample/service",
+      "to": "example.com/sample/models"
+    }
+  ]
+}

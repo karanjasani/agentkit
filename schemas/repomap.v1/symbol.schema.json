@@ -1,0 +1,6 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/karanjasani/agentkit/schemas/repomap.v1/symbol.schema.json",
+  "title": "repomap symbol result",
+  "$ref": "defs.schema.json#/$defs/symbol"
+}

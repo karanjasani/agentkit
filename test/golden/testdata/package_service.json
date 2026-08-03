@@ -1,0 +1,48 @@
+{
+  "import_path": "example.com/sample/service",
+  "name": "service",
+  "dir": "service",
+  "imports": [
+    "encoding/json",
+    "example.com/sample/models",
+    "net/http"
+  ],
+  "imported_by": [
+    "example.com/sample"
+  ],
+  "exports": [
+    {
+      "name": "FetchWidget",
+      "kind": "func",
+      "package": "example.com/sample/service",
+      "location": {
+        "file": "service/service.go",
+        "line": 15,
+        "col": 6
+      }
+    },
+    {
+      "name": "Helper",
+      "kind": "func",
+      "package": "example.com/sample/service",
+      "location": {
+        "file": "service/service.go",
+        "line": 27,
+        "col": 6
+      }
+    },
+    {
+      "name": "UsesHelper",
+      "kind": "func",
+      "package": "example.com/sample/service",
+      "location": {
+        "file": "service/service.go",
+        "line": 30,
+        "col": 6
+      }
+    }
+  ],
+  "test_files": [
+    "service/service_test.go"
+  ]
+}

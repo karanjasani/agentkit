@@ -1,0 +1,13 @@
+{
+  "name": "Helper",
+  "kind": "func",
+  "package": "example.com/sample/service",
+  "location": {
+    "file": "service/service.go",
+    "line": 27,
+    "col": 6
+  },
+  "signature": "func Helper() string",
+  "doc": "Helper is a trivial helper used to exercise caller analysis.",
+  "body": "func Helper() string { return \"help\" }"
+}

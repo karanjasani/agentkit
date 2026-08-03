@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/karanjasani/agentkit/schemas/repomap.v1/impact.schema.json",
+  "title": "repomap impact result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "base",
+    "changed_files",
+    "changed_packages",
+    "affected_packages",
+    "public_api_changed",
+    "recommended_tests",
+    "risk_score",
+    "risk_level"
+  ],
+  "properties": {
+    "base": { "type": "string" },
+    "changed_files": { "type": "array", "items": { "type": "string" } },
+    "changed_packages": { "type": "array", "items": { "type": "string" } },
+    "affected_packages": { "type": "array", "items": { "type": "string" } },
+    "public_api_changed": {
+      "type": "array",
+      "items": { "$ref": "defs.schema.json#/$defs/symbol" }
+    },
+    "recommended_tests": { "type": "array", "items": { "type": "string" } },
+    "risk_score": { "type": "integer", "minimum": 0, "maximum": 100 },
+    "risk_level": { "type": "string", "enum": ["low", "medium", "high"] }
+  }
+}

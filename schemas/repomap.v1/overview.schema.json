@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/karanjasani/agentkit/schemas/repomap.v1/overview.schema.json",
+  "title": "repomap overview result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["module", "packages", "entrypoints", "generated", "vendor", "stats"],
+  "properties": {
+    "module": { "type": "string" },
+    "go_version": { "type": "string" },
+    "packages": {
+      "type": "array",
+      "items": { "$ref": "defs.schema.json#/$defs/pkgref" }
+    },
+    "entrypoints": {
+      "type": "array",
+      "items": { "$ref": "defs.schema.json#/$defs/pkgref" }
+    },
+    "generated": { "type": "array", "items": { "type": "string" } },
+    "vendor": { "type": "array", "items": { "type": "string" } },
+    "stats": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["packages", "files", "entrypoints"],
+      "properties": {
+        "packages": { "type": "integer" },
+        "files": { "type": "integer" },
+        "entrypoints": { "type": "integer" }
+      }
+    }
+  }
+}

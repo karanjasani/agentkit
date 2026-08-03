@@ -1,0 +1,38 @@
+{
+  "symbol": "Helper",
+  "unit": [
+    {
+      "name": "TestFetchWidget",
+      "package": "example.com/sample/service",
+      "location": {
+        "file": "service/service_test.go",
+        "line": 7,
+        "col": 6
+      },
+      "kind": "unit"
+    },
+    {
+      "name": "TestHelper",
+      "package": "example.com/sample/service",
+      "location": {
+        "file": "service/service_test.go",
+        "line": 12,
+        "col": 6
+      },
+      "kind": "unit"
+    }
+  ],
+  "integration": [],
+  "benchmark": [
+    {
+      "name": "BenchmarkHelper",
+      "package": "example.com/sample/service",
+      "location": {
+        "file": "service/service_test.go",
+        "line": 19,
+        "col": 6
+      },
+      "kind": "benchmark"
+    }
+  ]
+}

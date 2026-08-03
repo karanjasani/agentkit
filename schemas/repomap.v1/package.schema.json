@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/karanjasani/agentkit/schemas/repomap.v1/package.schema.json",
+  "title": "repomap package result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["import_path", "name", "dir", "imports", "imported_by", "exports", "test_files"],
+  "properties": {
+    "import_path": { "type": "string" },
+    "name": { "type": "string" },
+    "dir": { "type": "string" },
+    "imports": { "type": "array", "items": { "type": "string" } },
+    "imported_by": { "type": "array", "items": { "type": "string" } },
+    "exports": {
+      "type": "array",
+      "items": { "$ref": "defs.schema.json#/$defs/symbol" }
+    },
+    "test_files": { "type": "array", "items": { "type": "string" } }
+  }
+}

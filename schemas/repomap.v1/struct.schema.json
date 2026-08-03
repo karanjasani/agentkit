@@ -1,0 +1,6 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/karanjasani/agentkit/schemas/repomap.v1/struct.schema.json",
+  "title": "repomap struct result",
+  "$ref": "defs.schema.json#/$defs/struct"
+}

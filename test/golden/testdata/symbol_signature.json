@@ -1,0 +1,11 @@
+{
+  "name": "FetchWidget",
+  "kind": "func",
+  "package": "example.com/sample/service",
+  "location": {
+    "file": "service/service.go",
+    "line": 15,
+    "col": 6
+  },
+  "signature": "func FetchWidget(id string) models.Widget"
+}

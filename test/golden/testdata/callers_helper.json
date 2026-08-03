@@ -1,0 +1,23 @@
+{
+  "symbol": "Helper",
+  "package": "example.com/sample/service",
+  "location": {
+    "file": "service/service.go",
+    "line": 27,
+    "col": 6
+  },
+  "direct": [
+    {
+      "symbol": "UsesHelper",
+      "package": "example.com/sample/service",
+      "location": {
+        "file": "service/service.go",
+        "line": 30,
+        "col": 41
+      },
+      "context": "func UsesHelper() string { return Helper() }",
+      "confidence": "direct"
+    }
+  ],
+  "indirect": []
+}

@@ -1,0 +1,45 @@
+---
+description: Prefer the repomap CLI over grep for structural questions, and run repomap impact before tests.
+alwaysApply: true
+---
+
+# Use `repomap` for repository intelligence
+
+This project has [`repomap`](https://github.com/karanjasani/agentkit) available: a
+read-only, deterministic Go analysis CLI that emits stable JSON. Prefer it over
+`grep`/`find` for structural questions.
+
+## Instead of grepping, locate symbols
+
+- `repomap symbol <Name> --signature-only` — signature + `file:line`.
+- `repomap symbol <Name> --body` — full declaration source.
+- `repomap symbol <Name> --doc` — doc comment only.
+- `repomap struct <pkg.Type>` — recursive JSON contract of a type.
+
+## Understand structure
+
+- `repomap overview` — packages, entrypoints, generated/vendored code.
+- `repomap package <path>` — imports, importers, exports, tests.
+- `repomap deps <path>` — intra-module dependency graph.
+
+## Trace relationships (edges carry a `confidence`)
+
+- `repomap callers <Name>` — direct + indirect callers.
+- `repomap tests <Name>` — tests that exercise a symbol.
+
+## Before running tests, scope the change
+
+Run `repomap impact --base <ref>` first. It maps changed files to affected
+packages, flags public-API changes, and returns `recommended_tests`. Prefer
+running those recommended tests over the entire suite.
+
+## HTTP surface area
+
+- `repomap endpoint <METHOD> <path>` — route → handler → upstreams.
+- `repomap upstreams <path>` — outbound calls under a path.
+
+## Notes
+
+- Output is deterministic JSON on stdout; diagnostics go to stderr.
+- Every result carries `file:line` evidence anchors — cite them.
+- `repomap` is read-only and offline; it never mutates the repository.

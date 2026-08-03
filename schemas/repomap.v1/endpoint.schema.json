@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/karanjasani/agentkit/schemas/repomap.v1/endpoint.schema.json",
+  "title": "repomap endpoint result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["method", "path", "framework", "route", "confidence"],
+  "properties": {
+    "method": { "type": "string" },
+    "path": { "type": "string" },
+    "framework": { "type": "string" },
+    "handler": { "$ref": "defs.schema.json#/$defs/symbol" },
+    "route": { "$ref": "defs.schema.json#/$defs/location" },
+    "orchestration": {
+      "type": "array",
+      "items": { "$ref": "defs.schema.json#/$defs/symbol" }
+    },
+    "upstreams": {
+      "type": "array",
+      "items": { "$ref": "defs.schema.json#/$defs/upstream" }
+    },
+    "request_type": { "type": "string" },
+    "response_type": { "type": "string" },
+    "confidence": { "type": "string" }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/karanjasani/agentkit/schemas/repomap.v1/tests.schema.json",
+  "title": "repomap tests result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["symbol", "unit", "integration", "benchmark"],
+  "properties": {
+    "symbol": { "type": "string" },
+    "unit": {
+      "type": "array",
+      "items": { "$ref": "defs.schema.json#/$defs/test" }
+    },
+    "integration": {
+      "type": "array",
+      "items": { "$ref": "defs.schema.json#/$defs/test" }
+    },
+    "benchmark": {
+      "type": "array",
+      "items": { "$ref": "defs.schema.json#/$defs/test" }
+    }
+  }
+}
