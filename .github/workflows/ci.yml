@@ -38,7 +38,11 @@ jobs:
       - name: Vet
         run: go vet ./...
       - name: Test
-        run: go test -mod=readonly -race -coverprofile=coverage.txt -covermode=atomic ./...
+        # Force bash on all platforms: Windows runners default to PowerShell,
+        # which mis-parses the native-command flag "-coverprofile=coverage.txt"
+        # and passes a stray ".txt" to go as a package pattern.
+        shell: bash
+        run: go test -mod=readonly -race -timeout=20m -coverprofile=coverage.txt -covermode=atomic ./...
 
   lint:
     name: Lint
