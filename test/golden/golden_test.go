@@ -143,8 +143,11 @@ func writeGolden(t *testing.T, path string, data []byte) {
 	}
 }
 
-// normalize trims a trailing newline so editor settings do not cause spurious
-// diffs.
+// normalize makes the comparison independent of trailing newlines and of the
+// CRLF line endings that Git may introduce when checking out golden files on
+// Windows (autocrlf). The generated output always uses LF, so folding CRLF to
+// LF here keeps the byte comparison stable across platforms.
 func normalize(b []byte) []byte {
+	b = bytes.ReplaceAll(b, []byte("\r\n"), []byte("\n"))
 	return bytes.TrimRight(b, "\n")
 }
